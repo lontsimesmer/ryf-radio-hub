@@ -1,0 +1,140 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-heading: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --radius-4xl: calc(var(--radius) + 16px);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  /* RYF Specific Brand Colors */
+  --color-ryf-blue: var(--ryf-blue);
+  --color-ryf-cyan: var(--ryf-cyan);
+  --color-ryf-navy: var(--ryf-navy);
+  --color-ryf-dark: var(--ryf-dark);
+}
+
+:root {
+  --radius: 0.625rem;
+  --background: oklch(0.99 0.005 240);
+  --foreground: oklch(0.18 0.04 250);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.18 0.04 250);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.18 0.04 250);
+
+  /* RYF Brand Colors: Vibrant Electric Blue, Cyan, Navy */
+  --primary: oklch(0.55 0.2 250); /* #1e7fcb equivalent vibrant RYF blue */
+  --primary-foreground: oklch(0.99 0 0);
+  --secondary: oklch(0.95 0.02 245);
+  --secondary-foreground: oklch(0.22 0.06 255);
+  --muted: oklch(0.96 0.01 245);
+  --muted-foreground: oklch(0.48 0.04 250);
+  --accent: oklch(0.68 0.16 230); /* Cyan touch */
+  --accent-foreground: oklch(0.12 0.04 250);
+  --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: oklch(0.99 0 0);
+  --border: oklch(0.92 0.015 245);
+  --input: oklch(0.9 0.015 245);
+  --ring: oklch(0.55 0.2 250);
+
+  --ryf-blue: oklch(0.55 0.2 250); /* #1e7fcb / #1570b8 */
+  --ryf-cyan: oklch(0.7 0.17 225); /* #23b2ee / #00a8ea */
+  --ryf-navy: oklch(0.2 0.07 258); /* #0d1e3d */
+  --ryf-dark: oklch(0.14 0.05 260); /* #071124 */
+}
+
+@layer base {
+  html,
+  body {
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  * {
+    border-color: var(--color-border);
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    overflow-x: hidden;
+    position: relative;
+    width: 100%;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-heading);
+  }
+}
+
+/* Marquee continuous scroll animation */
+@keyframes marquee {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+/* Sound wave animation helper */
+@keyframes soundwave {
+  0%,
+  100% {
+    height: 6px;
+  }
+  50% {
+    height: 26px;
+  }
+}
+
+.animate-wave-1 {
+  animation: soundwave 1.1s ease-in-out infinite;
+}
+.animate-wave-2 {
+  animation: soundwave 0.8s ease-in-out infinite 0.2s;
+}
+.animate-wave-3 {
+  animation: soundwave 1.3s ease-in-out infinite 0.4s;
+}
+.animate-wave-4 {
+  animation: soundwave 0.9s ease-in-out infinite 0.1s;
+}
+.animate-wave-5 {
+  animation: soundwave 1.2s ease-in-out infinite 0.3s;
+}
