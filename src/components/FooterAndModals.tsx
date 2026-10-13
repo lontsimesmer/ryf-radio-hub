@@ -1,16 +1,18 @@
-import React, { useState } from "react";
+import React, { useState, useSyncExternalStore } from "react";
 import { RYF_ASSETS, RYF_CONTACTS, RYF_PROGRAMMES } from "@/lib/ryf-data";
 import { WhatsAppIcon } from "@/components/WhatsAppIcon";
 import { Phone, Mail, MapPin, Calendar, X, Send, Upload, FileCheck } from "lucide-react";
 import { toast } from "sonner";
+import { playerStore } from "@/lib/player-store";
 
-interface FooterProps {
-  scheduleOpen: boolean;
-  setScheduleOpen: (open: boolean) => void;
-  onOpenPlayer?: () => void;
-}
-
-export const FooterAndModals: React.FC<FooterProps> = ({ scheduleOpen, setScheduleOpen }) => {
+export const FooterAndModals: React.FC = () => {
+  const scheduleOpen = useSyncExternalStore(
+    playerStore.subscribe,
+    playerStore.getScheduleOpen,
+    () => false,
+  );
+  const setScheduleOpen = (open: boolean) =>
+    open ? playerStore.openSchedule() : playerStore.closeSchedule();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [subject, setSubject] = useState("Campagne Publicitaire & Spots Radio");
@@ -168,7 +170,7 @@ export const FooterAndModals: React.FC<FooterProps> = ({ scheduleOpen, setSchedu
           {/* Header épuré : titre + description */}
           <div className="text-center max-w-2xl mx-auto mb-10">
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-foreground tracking-tight uppercase">
-              ÉCHANGEZ AVEC <span className="text-primary">RYF RADIO</span>
+              ÉCHANGEZ AVEC <span className="text-primary">nous</span>
             </h2>
             <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
               Vous souhaitez diffuser un spot publicitaire, parrainer une émission, annoncer un
@@ -338,7 +340,7 @@ export const FooterAndModals: React.FC<FooterProps> = ({ scheduleOpen, setSchedu
                   className="flex items-center gap-2.5 text-white/80 hover:text-white"
                 >
                   <Mail className="w-4 h-4 text-accent" />
-                  <span>Email : {RYF_CONTACTS.email}</span>
+                  <span>{RYF_CONTACTS.email}</span>
                 </a>
               </div>
             </div>
@@ -383,22 +385,17 @@ export const FooterAndModals: React.FC<FooterProps> = ({ scheduleOpen, setSchedu
             </div>
           </div>
 
-          <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-white/60">
-            <div>
-              © {new Date().getFullYear()} RYF RADIO • Rythmes & Folies. Tous droits réservés.
-            </div>
-            <div className="flex items-center gap-4 text-[11px]">
+          <div className="pt-6 flex flex-col items-center gap-3 text-xs text-white/60">
+            <div className="flex items-center gap-6">
               <a href="#a-propos" className="hover:text-white">
                 Mentions Légales
               </a>
-              <span>•</span>
               <a href="#contact" className="hover:text-white">
                 Politique de Confidentialité
               </a>
-              <span>•</span>
-              <a href="#hero" className="hover:text-white">
-                Plan du Site
-              </a>
+            </div>
+            <div>
+              © {new Date().getFullYear()} RYF RADIO • Rythmes & Folies. Tous droits réservés.
             </div>
           </div>
         </div>

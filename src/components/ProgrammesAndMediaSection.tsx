@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import { RYF_VIDEOS, RYF_PODCASTS, RYF_DAILY_CHRONIQUES, RYF_ASSETS } from "@/lib/ryf-data";
+import { playerStore } from "@/lib/player-store";
 import {
   Play,
   Tv,
@@ -11,8 +12,8 @@ import {
 } from "lucide-react";
 
 interface ProgrammesAndMediaProps {
-  onOpenPlayer: () => void;
-  onOpenSchedule: () => void;
+  onOpenPlayer?: () => void;
+  onOpenSchedule?: () => void;
 }
 
 /* ------------------------------------------------------------------ */
@@ -95,6 +96,8 @@ export const ProgrammesAndMediaSection: React.FC<ProgrammesAndMediaProps> = ({
   onOpenPlayer,
   onOpenSchedule,
 }) => {
+  const openPlayer = onOpenPlayer ?? (() => playerStore.openPlayer());
+  const openSchedule = onOpenSchedule ?? (() => playerStore.openSchedule());
   const [activeVideo, setActiveVideo] = useState<string | null>(null);
   const [playingPodcast, setPlayingPodcast] = useState<string | null>(null);
 
@@ -218,7 +221,7 @@ export const ProgrammesAndMediaSection: React.FC<ProgrammesAndMediaProps> = ({
           {/* Header */}
           <div className="text-center max-w-3xl mx-auto mb-6 sm:mb-8">
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-white tracking-tight uppercase">
-              NOS PROGRAMMES
+              NOS <span className="text-primary">PROGRAMMES</span>
             </h2>
             <p className="mt-1.5 text-xs sm:text-sm text-white/85">
               Nous vous accompagnons à travers des programmes qui donnent une place centrale à la
@@ -250,8 +253,8 @@ export const ProgrammesAndMediaSection: React.FC<ProgrammesAndMediaProps> = ({
       {/* ================= SECTION: VIDÉOS (VIENT AVANT PODCASTS) ================= */}
       <section id="videos" className="py-16 bg-slate-50 border-b border-border/70 overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="mb-8">
-            <h2 className="text-3xl sm:text-4xl font-black text-foreground tracking-tight uppercase">
+          <div className="text-center max-w-3xl mx-auto mb-8">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-foreground tracking-tight uppercase">
               VIDÉOS
             </h2>
           </div>
@@ -353,13 +356,10 @@ export const ProgrammesAndMediaSection: React.FC<ProgrammesAndMediaProps> = ({
       <section id="podcasts" className="py-16 bg-white border-b border-border/70">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
-            <div>
-              <h2 className="text-3xl sm:text-4xl font-black text-foreground tracking-tight uppercase">
-                PODCASTS <span className="text-primary">RYF</span>
+            <div className="text-center w-full">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-foreground tracking-tight uppercase">
+                PODCASTS
               </h2>
-              <p className="text-sm text-muted-foreground mt-1 max-w-xl">
-                Revivez vos chroniques, débats culturels et entretiens d'artistes à tout moment.
-              </p>
             </div>
 
             {/* Direction arrows — text-link style, shown/hidden by scroll position */}
@@ -395,7 +395,7 @@ export const ProgrammesAndMediaSection: React.FC<ProgrammesAndMediaProps> = ({
             <div
               ref={podcastScrollerRef}
               onScroll={updatePodcastPosition}
-              className="flex gap-6 overflow-x-auto scroll-smooth snap-x snap-mandatory pb-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+              className="flex gap-6 justify-center items-center overflow-x-auto scroll-smooth snap-x snap-mandatory pb-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] text-left"
             >
               {RYF_PODCASTS.map((pod, idx) => (
                 <div

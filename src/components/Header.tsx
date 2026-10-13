@@ -1,5 +1,7 @@
 import React, { useState } from "react";
+import { Link } from "@tanstack/react-router";
 import { RYF_ASSETS, RYF_CONTACTS } from "@/lib/ryf-data";
+import { playerStore } from "@/lib/player-store";
 import {
   Phone,
   Radio,
@@ -13,27 +15,28 @@ import {
   Mic,
   PlayCircle,
   CalendarDays,
-  Trophy,
+  Users,
   type LucideIcon,
 } from "lucide-react";
 import { WhatsAppIcon } from "@/components/WhatsAppIcon";
 import { SearchDrawer } from "@/components/SearchDrawer";
 
 interface HeaderProps {
-  onOpenPlayer: () => void;
-  onOpenSchedule: () => void;
+  onOpenSchedule?: () => void;
 }
 
 interface NavSubItem {
   label: string;
-  href: string;
+  href?: string;
+  to?: string;
   description: string;
   icon: LucideIcon;
 }
 interface NavLinkItem {
   type: "link";
   label: string;
-  href: string;
+  href?: string;
+  to?: string;
 }
 interface NavMegaItem {
   type: "mega";
@@ -42,31 +45,32 @@ interface NavMegaItem {
 }
 type NavEntry = NavLinkItem | NavMegaItem;
 
-// Reduced top-level navigation: grouped media & culture content into mega-menus
-// so the "ÉCOUTER EN DIRECT" button stays fully visible on desktop.
+// Navigation adaptée aux sections réelles de la page.
+// Les sections disposant d'une page dédiée (À Propos, Actualités) naviguent
+// via une route TanStack ; les autres restent des ancres (#) de la page d'accueil.
 const navConfig: NavEntry[] = [
   { type: "link", label: "ACCUEIL", href: "#hero" },
-  { type: "link", label: "À PROPOS", href: "#a-propos" },
+  { type: "link", label: "À PROPOS", to: "/a-propos" },
   {
     type: "mega",
     label: "MÉDIAS",
     items: [
       {
         label: "ACTUALITÉS",
-        href: "#actualites",
+        to: "/actualites",
         description: "L'actualité culturelle, musicale & de société",
         icon: Newspaper,
       },
       {
         label: "PODCASTS",
         href: "#podcasts",
-        description: "Réécoutez nos meilleures émissions en replay",
+        description: "Réécoutez nos émissions en replay",
         icon: Mic,
       },
       {
         label: "VIDÉOS",
         href: "#videos",
-        description: "Nos vidéos, lives & reportages exclusifs",
+        description: "Nos lives & reportages exclusifs",
         icon: PlayCircle,
       },
     ],
@@ -88,20 +92,21 @@ const navConfig: NavEntry[] = [
         icon: Radio,
       },
       {
-        label: "NOS RÉALISATIONS",
-        href: "#realisations",
-        description: "Couvertures, interviews & retransmissions",
-        icon: Trophy,
+        label: "ÉQUIPE",
+        href: "#equipe",
+        description: "Les voix & visages de RYF Radio",
+        icon: Users,
       },
     ],
   },
-  { type: "link", label: "PUBLICITÉ", href: "#contact" },
   { type: "link", label: "CONTACT", href: "#contact" },
 ];
 
-export const Header: React.FC<HeaderProps> = ({ onOpenPlayer, onOpenSchedule }) => {
+export const Header: React.FC<HeaderProps> = ({ onOpenSchedule }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+
+  const openSchedule = onOpenSchedule ?? (() => playerStore.openSchedule());
 
   return (
     <header className="sticky top-0 z-40 w-full bg-white/95 backdrop-blur-md shadow-xs border-b border-border/70 transition-all">
@@ -214,14 +219,25 @@ export const Header: React.FC<HeaderProps> = ({ onOpenPlayer, onOpenSchedule }) 
         <nav className="hidden xl:flex items-center gap-0.5 font-semibold text-xs text-foreground/80">
           {navConfig.map((entry) =>
             entry.type === "link" ? (
-              <a
-                key={entry.label}
-                href={entry.href}
-                className="group/nav relative inline-flex items-center px-2.5 py-1.5 rounded-md text-foreground/80 hover:text-primary transition-colors"
-              >
-                <span>{entry.label}</span>
-                <span className="pointer-events-none absolute left-2.5 right-2.5 -bottom-0.5 h-[3px] scale-x-0 origin-left rounded-full bg-accent transition-transform duration-300 ease-out group-hover/nav:scale-x-100" />
-              </a>
+              entry.to ? (
+                <Link
+                  key={entry.label}
+                  to={entry.to}
+                  className="group/nav relative inline-flex items-center px-2.5 py-1.5 rounded-md text-foreground/80 hover:text-primary transition-colors"
+                >
+                  <span>{entry.label}</span>
+                  <span className="pointer-events-none absolute left-2.5 right-2.5 -bottom-0.5 h-[3px] scale-x-0 origin-left rounded-full bg-accent transition-transform duration-300 ease-out group-hover/nav:scale-x-100" />
+                </Link>
+              ) : (
+                <a
+                  key={entry.label}
+                  href={entry.href}
+                  className="group/nav relative inline-flex items-center px-2.5 py-1.5 rounded-md text-foreground/80 hover:text-primary transition-colors"
+                >
+                  <span>{entry.label}</span>
+                  <span className="pointer-events-none absolute left-2.5 right-2.5 -bottom-0.5 h-[3px] scale-x-0 origin-left rounded-full bg-accent transition-transform duration-300 ease-out group-hover/nav:scale-x-100" />
+                </a>
+              )
             ) : (
               <div key={entry.label} className="group/mega relative">
                 <button
@@ -247,12 +263,8 @@ export const Header: React.FC<HeaderProps> = ({ onOpenPlayer, onOpenSchedule }) 
                     <div className="p-2">
                       {entry.items.map((sub) => {
                         const Icon = sub.icon;
-                        return (
-                          <a
-                            key={sub.label}
-                            href={sub.href}
-                            className="group/sub flex items-start gap-3 rounded-lg px-3 py-2.5 transition-colors hover:bg-secondary"
-                          >
+                        const inner = (
+                          <span className="group/sub flex items-start gap-3 rounded-lg px-3 py-2.5 transition-colors hover:bg-secondary">
                             <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary transition-colors group-hover/sub:bg-primary group-hover/sub:text-primary-foreground">
                               <Icon className="h-4 w-4" />
                             </span>
@@ -262,6 +274,15 @@ export const Header: React.FC<HeaderProps> = ({ onOpenPlayer, onOpenSchedule }) 
                                 {sub.description}
                               </span>
                             </span>
+                          </span>
+                        );
+                        return sub.to ? (
+                          <Link key={sub.label} to={sub.to}>
+                            {inner}
+                          </Link>
+                        ) : (
+                          <a key={sub.label} href={sub.href}>
+                            {inner}
                           </a>
                         );
                       })}
@@ -277,7 +298,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenPlayer, onOpenSchedule }) 
         <div className="flex items-center gap-2 sm:gap-3">
           {/* Schedule button */}
           <button
-            onClick={onOpenSchedule}
+            onClick={openSchedule}
             className="hidden md:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border bg-card text-foreground text-xs font-semibold hover:bg-secondary transition-colors shadow-2xs"
             title="Consulter la grille des programmes"
           >
@@ -311,17 +332,28 @@ export const Header: React.FC<HeaderProps> = ({ onOpenPlayer, onOpenSchedule }) 
       {/* Mobile drawer */}
       {mobileMenuOpen && (
         <div className="xl:hidden border-t border-border bg-card px-4 pt-3 pb-6 shadow-xl animate-in slide-in-from-top duration-200">
-          <div className="flex flex-col gap-1 text-sm font-semibold">
+          <div className="flex flex-col gap-0.5 text-sm font-semibold">
             {navConfig.map((entry) =>
               entry.type === "link" ? (
-                <a
-                  key={entry.label}
-                  href={entry.href}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="rounded-lg px-3 py-2.5 text-foreground hover:bg-secondary hover:text-primary transition-colors"
-                >
-                  {entry.label}
-                </a>
+                entry.to ? (
+                  <Link
+                    key={entry.label}
+                    to={entry.to}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="rounded-lg px-3 py-2.5 text-foreground hover:bg-secondary hover:text-primary transition-colors"
+                  >
+                    {entry.label}
+                  </Link>
+                ) : (
+                  <a
+                    key={entry.label}
+                    href={entry.href}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="rounded-lg px-3 py-2.5 text-foreground hover:bg-secondary hover:text-primary transition-colors"
+                  >
+                    {entry.label}
+                  </a>
+                )
               ) : (
                 <div key={entry.label} className="flex flex-col">
                   <div className="flex items-center gap-2 px-3 pt-3 pb-1 text-[11px] font-black uppercase tracking-widest text-primary">
@@ -331,15 +363,19 @@ export const Header: React.FC<HeaderProps> = ({ onOpenPlayer, onOpenSchedule }) 
                   <div className="flex flex-col gap-0.5 pl-2">
                     {entry.items.map((sub) => {
                       const Icon = sub.icon;
-                      return (
-                        <a
-                          key={sub.label}
-                          href={sub.href}
-                          onClick={() => setMobileMenuOpen(false)}
-                          className="flex items-center gap-3 rounded-lg px-3 py-2 text-foreground/90 hover:bg-secondary hover:text-primary transition-colors"
-                        >
+                      const inner = (
+                        <span className="flex items-center gap-3 rounded-lg px-3 py-2 text-foreground/90 hover:bg-secondary hover:text-primary transition-colors">
                           <Icon className="h-4 w-4 text-primary" />
                           {sub.label}
+                        </span>
+                      );
+                      return sub.to ? (
+                        <Link key={sub.label} to={sub.to} onClick={() => setMobileMenuOpen(false)}>
+                          {inner}
+                        </Link>
+                      ) : (
+                        <a key={sub.label} href={sub.href} onClick={() => setMobileMenuOpen(false)}>
+                          {inner}
                         </a>
                       );
                     })}
@@ -347,29 +383,6 @@ export const Header: React.FC<HeaderProps> = ({ onOpenPlayer, onOpenSchedule }) 
                 </div>
               ),
             )}
-          </div>
-
-          <div className="mt-5 pt-4 border-t border-border flex flex-col gap-3">
-            <button
-              onClick={() => {
-                setMobileMenuOpen(false);
-                onOpenSchedule();
-              }}
-              className="w-full py-2 px-3 rounded-lg border border-border text-xs font-semibold text-foreground flex items-center justify-center gap-2 bg-secondary/50"
-            >
-              <Calendar className="w-4 h-4 text-primary" />
-              Consulter la grille des programmes
-            </button>
-            <button
-              onClick={() => {
-                setMobileMenuOpen(false);
-                onOpenPlayer();
-              }}
-              className="w-full py-2.5 rounded-lg bg-primary text-primary-foreground font-bold text-xs flex items-center justify-center gap-2 shadow-sm"
-            >
-              <Radio className="w-4 h-4 text-accent" />
-              ÉCOUTER EN DIRECT LE FLUX RYF
-            </button>
           </div>
         </div>
       )}
