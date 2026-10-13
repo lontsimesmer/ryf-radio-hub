@@ -77,8 +77,8 @@ export const RealisationsAndCommunitySection: React.FC = () => {
       <div className="absolute bottom-0 left-0 w-80 h-80 bg-blue-400/10 rounded-full blur-3xl pointer-events-none" />
 
       <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 text-center">
-        <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-white tracking-tight uppercase">
-          REJOIGNEZ LA COMMUNAUTÉ RYF
+        <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-white tracking-tight uppercase">
+          REJOIGNEZ LA <span className="text-primary">COMMUNAUTÉ</span>
         </h2>
 
         <p className="mt-3 text-lg sm:text-xl font-bold text-accent">

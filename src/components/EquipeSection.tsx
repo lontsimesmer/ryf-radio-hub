@@ -1,62 +1,22 @@
 import React, { useState, useEffect } from "react";
 import { RYF_ASSETS } from "@/lib/ryf-data";
-import { ChevronRight, ChevronLeft, Sparkles } from "lucide-react";
-
-interface TeamMember {
-  id: string;
-  name: string;
-  role: string;
-  bio: string;
-  imageUrl: string;
-}
-
-const OTHER_MEMBERS: TeamMember[] = [
-  {
-    id: "member-1",
-    name: "Dr. Nadia B.",
-    role: "Chronique Santé & Bien-être",
-    bio: "Spécialiste du bien-être et de la santé naturelle, elle anime des chroniques inspirantes consacrées à l'équilibre et au mode de vie au quotidien.",
-    imageUrl: RYF_ASSETS.teamMember1,
-  },
-  {
-    id: "member-2",
-    name: "Alexandre V.",
-    role: "Animateur Talk & Culture Urbaine",
-    bio: "Voix dynamique de l'antenne, il décrypte les tendances émergentes, les hits afrobeats et les cultures urbaines avec passion et franchise.",
-    imageUrl: RYF_ASSETS.teamMember2,
-  },
-  {
-    id: "member-3",
-    name: "Brice Laurent",
-    role: "Journaliste & Production Antenne",
-    bio: "Journaliste de terrain et producteur, il coordonne les flashs infos, les reportages culturels et les grands rendez-vous de direct.",
-    imageUrl: RYF_ASSETS.teamMember3,
-  },
-  {
-    id: "member-4",
-    name: "DJ Fox & Mix Master",
-    role: "Directeur Musical & Sets Live",
-    bio: "Virtuose des platines, créateur des playlists exclusives RYF Radio et maestro des nuits afro-electro et rythmes d'Afrique.",
-    imageUrl: RYF_ASSETS.teamMember4,
-  },
-];
+import { RYF_TEAM_MEMBERS } from "@/lib/team-data";
+import { ChevronRight, ChevronLeft, Mic, UserCheck, Calendar } from "lucide-react";
 
 export const EquipeSection: React.FC = () => {
   const [activeIdx, setActiveIdx] = useState(0);
   const [isFading, setIsFading] = useState(false);
 
-  // Auto transition with subtle transparency anticipation
+  // Transition automatique fluide avec anticipation transparente
   useEffect(() => {
-    // Anticipate transition by making slightly transparent after 3.2s
     const fadeTimer = setTimeout(() => {
       setIsFading(true);
-    }, 3400);
+    }, 4000);
 
-    // Switch to next slide at 4.5s
     const switchTimer = setTimeout(() => {
-      setActiveIdx((prev) => (prev + 1) % OTHER_MEMBERS.length);
+      setActiveIdx((prev) => (prev + 1) % RYF_TEAM_MEMBERS.length);
       setIsFading(false);
-    }, 4500);
+    }, 5000);
 
     return () => {
       clearTimeout(fadeTimer);
@@ -66,72 +26,148 @@ export const EquipeSection: React.FC = () => {
 
   const nextMember = () => {
     setIsFading(false);
-    setActiveIdx((prev) => (prev + 1) % OTHER_MEMBERS.length);
+    setActiveIdx((prev) => (prev + 1) % RYF_TEAM_MEMBERS.length);
   };
 
   const prevMember = () => {
     setIsFading(false);
-    setActiveIdx((prev) => (prev - 1 + OTHER_MEMBERS.length) % OTHER_MEMBERS.length);
+    setActiveIdx((prev) => (prev - 1 + RYF_TEAM_MEMBERS.length) % RYF_TEAM_MEMBERS.length);
   };
 
-  const currentMember = OTHER_MEMBERS[activeIdx];
-  const nextPreview = OTHER_MEMBERS[(activeIdx + 1) % OTHER_MEMBERS.length];
+  const currentMember = RYF_TEAM_MEMBERS[activeIdx];
+  const nextPreview = RYF_TEAM_MEMBERS[(activeIdx + 1) % RYF_TEAM_MEMBERS.length];
+
+  if (!currentMember) return null;
 
   return (
     <section
       id="equipe"
-      className="py-16 sm:py-20 bg-white text-foreground border-b border-border/70 relative pt-[54px] pb-[54px]"
+      className="py-10 sm:py-14 bg-white text-foreground border-b border-border/70 relative"
+      style={{ borderRadius: "0px" }}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6">
         {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-foreground tracking-tight uppercase">
-            NOTRE ÉQUIPE
+        <div className="text-center max-w-3xl mx-auto mb-8 sm:mb-10">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-foreground tracking-tight uppercase">
+            NOTRE <span className="text-primary">ÉQUIPE</span>
           </h2>
         </div>
 
-        {/* CEO Spotlight - Clean, unbordered, no dark card/pill/tags */}
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-12 items-center mb-16 sm:mb-20">
-          {/* CEO Photo (left) */}
-          <div className="md:col-span-5 flex justify-center md:justify-start">
-            <img
-              src={RYF_ASSETS.img5Ceo}
-              alt="Eric TCHATAT - CEO & Founder RYF Radio"
-              className="w-full max-w-[340px] sm:max-w-[380px] h-auto object-cover rounded-2xl shadow-xl"
-            />
+        {/* CEO Spotlight - Cadre royal haut de gamme avec découpe au-dessus des chaussettes */}
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-8 sm:gap-14 mb-10 sm:mb-12">
+          {/* Portrait Image with royal luxury frame */}
+          <div className="relative group shrink-0">
+            {/* Cadre or royal & platine : bordures superposées, angles droits */}
+            <div
+              className="relative p-2.5 sm:p-3 bg-gradient-to-tr from-amber-600/40 via-slate-100 to-amber-500/40 shadow-2xl border-2 border-amber-600/60"
+              style={{ borderRadius: "0px" }}
+            >
+              {/* Filet doré intérieur royal */}
+              <div
+                className="p-1.5 border border-amber-500/50 bg-slate-950 shadow-inner"
+                style={{ borderRadius: "0px" }}
+              >
+                {/* Conteneur image : taille rognée nette au-dessus des chaussettes */}
+                <div
+                  className="relative overflow-hidden w-[280px] sm:w-[320px] md:w-[340px] h-[390px] sm:h-[440px] md:h-[460px] bg-slate-950"
+                  style={{ borderRadius: "0px" }}
+                >
+                  <img
+                    src={RYF_ASSETS.img5Ceo}
+                    alt="Eric TCHATAT - CEO & Founder RYF Radio"
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+                    style={{
+                      borderRadius: "0px",
+                      objectPosition: "center 15%",
+                    }}
+                  />
+
+                  {/* Dégradé discret pour sublimer le costume */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/50 via-transparent to-amber-950/10 pointer-events-none" />
+                </div>
+              </div>
+
+              {/* Nouveau SVG Diplôme officiel en haut à droite */}
+              <div
+                aria-hidden="true"
+                className="absolute -top-4 -right-4 z-20 w-11 h-11 flex items-center justify-center bg-white shadow-xl border-2 border-amber-600/80 backdrop-blur-xs p-1.5"
+                style={{ borderRadius: "0px" }}
+                title="Diplôme et distinction"
+              >
+                <img
+                  src="https://vibe.filesafe.space/1791205471365853905/attachments/f2405c21-2670-4b47-a8ac-9252ffeeacb7.png"
+                  alt="Diplôme"
+                  className="w-full h-full object-contain filter drop-shadow-sm brightness-90 hover:brightness-100 transition-all"
+                />
+              </div>
+
+              {/* Médaille royale en bas à gauche */}
+              <div
+                aria-hidden="true"
+                className="absolute -bottom-4 -left-4 z-20 w-11 h-11 flex items-center justify-center bg-white shadow-xl border-2 border-amber-600/80 backdrop-blur-xs text-amber-600 p-2"
+                style={{ borderRadius: "0px" }}
+                title="Mérite et distinction royale"
+              >
+                <svg
+                  className="w-full h-full filter drop-shadow-xs"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  stroke="currentColor"
+                  strokeWidth="1"
+                >
+                  <circle cx="12" cy="8" r="6" fill="#d97706" />
+                  <circle cx="12" cy="8" r="4" fill="#fbbf24" />
+                  <path d="M15.477 12.89 18 22l-6-3-6 3 2.523-9.11" fill="#b45309" />
+                </svg>
+              </div>
+
+              {/* Coins d'ornement royaux dorés */}
+              <div className="pointer-events-none absolute top-1 left-1 w-2.5 h-2.5 border-t-2 border-l-2 border-amber-500" />
+              <div className="pointer-events-none absolute top-1 right-1 w-2.5 h-2.5 border-t-2 border-r-2 border-amber-500" />
+              <div className="pointer-events-none absolute bottom-1 left-1 w-2.5 h-2.5 border-b-2 border-l-2 border-amber-500" />
+              <div className="pointer-events-none absolute bottom-1 right-1 w-2.5 h-2.5 border-b-2 border-r-2 border-amber-500" />
+            </div>
           </div>
 
-          {/* CEO Details (right) */}
-          <div className="md:col-span-7 space-y-4">
-            <div>
-              <h3 className="text-2xl sm:text-3xl lg:text-4xl font-black text-foreground tracking-tight">
-                Eric TCHATAT
-              </h3>
-              <p className="text-base sm:text-lg font-bold text-primary mt-1 tracking-wider uppercase">
-                CEO-FOUNDER
-              </p>
-            </div>
+          {/* CEO Details */}
+          <div className="text-center sm:text-left space-y-2">
+            <h3
+              className="text-3xl sm:text-4xl md:text-5xl text-slate-900 tracking-wide"
+              style={{
+                fontFamily: "Georgia, 'Times New Roman', 'Playfair Display', serif",
+                fontStyle: "italic",
+              }}
+            >
+              Eric TCHATAT
+            </h3>
+            <p className="text-xs sm:text-sm font-semibold text-primary tracking-widest uppercase">
+              CEO-FOUNDER
+            </p>
           </div>
         </div>
 
-        {/* Mini-page interactive des autres membres de l'équipe */}
-        <div className="max-w-4xl mx-auto pt-8 border-t border-border/70">
-          <div className="flex items-center justify-between mb-4">
+        {/* Mini-page interactive : alternance Collaborateurs & Animateurs (taille de conteneur réduite et soignée) */}
+        <div
+          className="max-w-3xl mx-auto pt-6 border-t border-border/70"
+          style={{ borderRadius: "0px" }}
+        >
+          <div className="flex items-center justify-between mb-3">
             <div>
-              <h4 className="text-xs font-black uppercase tracking-widest text-primary">
-                COLLABORATEURS & ANIMATEURS
+              <h4 className="text-[11px] sm:text-xs font-black uppercase tracking-widest text-primary flex items-center gap-1.5">
+                <span>COLLABORATEURS & ANIMATEURS</span>
               </h4>
-              <p className="text-sm font-bold text-foreground">
-                Découvrez les autres visages et voix qui font vivre RYF Radio
+              <p className="text-xs sm:text-sm font-bold text-foreground">
+                Découvrez les visages et les voix de RYF Radio
               </p>
             </div>
-            {/* Direct navigation buttons */}
-            <div className="flex items-center gap-2">
+            {/* Boutons de navigation */}
+            <div className="flex items-center gap-1.5">
               <button
                 type="button"
                 onClick={prevMember}
                 aria-label="Membre précédent"
-                className="w-9 h-9 rounded-full border border-border bg-card hover:bg-secondary flex items-center justify-center text-foreground transition-all shadow-xs"
+                className="w-8 h-8 border border-border bg-card hover:bg-secondary flex items-center justify-center text-foreground transition-all shadow-xs"
+                style={{ borderRadius: "0px" }}
               >
                 <ChevronLeft className="w-4 h-4" />
               </button>
@@ -139,14 +175,15 @@ export const EquipeSection: React.FC = () => {
                 type="button"
                 onClick={nextMember}
                 aria-label="Membre suivant"
-                className="w-9 h-9 rounded-full border border-border bg-card hover:bg-secondary flex items-center justify-center text-foreground transition-all shadow-xs"
+                className="w-8 h-8 border border-border bg-card hover:bg-secondary flex items-center justify-center text-foreground transition-all shadow-xs"
+                style={{ borderRadius: "0px" }}
               >
                 <ChevronRight className="w-4 h-4" />
               </button>
             </div>
           </div>
 
-          {/* Mini-page container with click to advance and subtle auto-transparency */}
+          {/* Mini-page container : plus compact, cliquable avec aperçu en transparence */}
           <div
             onClick={nextMember}
             role="button"
@@ -154,61 +191,105 @@ export const EquipeSection: React.FC = () => {
             onKeyDown={(e) => {
               if (e.key === "Enter" || e.key === " ") nextMember();
             }}
-            aria-label="Cliquer pour afficher le membre suivant de l'équipe"
-            className="group relative cursor-pointer bg-slate-50 hover:bg-slate-100/90 rounded-2xl border border-border/80 p-5 sm:p-7 shadow-md hover:shadow-xl transition-all duration-700 overflow-hidden"
+            aria-label="Cliquer pour afficher le membre suivant"
+            className="group relative cursor-pointer bg-slate-50 hover:bg-slate-100/90 border border-border/80 p-4 sm:p-5 shadow-sm hover:shadow-md transition-all duration-700 overflow-hidden"
+            style={{ borderRadius: "0px" }}
           >
-            {/* Background peek of the next member for the layered mini-page effect */}
-            <div className="absolute top-0 right-0 bottom-0 w-1/3 opacity-10 pointer-events-none overflow-hidden blur-[1px]">
+            {/* Compteur dynamique en position fixe haute, hors de la transition */}
+            <span className="absolute top-2 right-3 z-30 text-[10px] font-semibold text-muted-foreground tabular-nums">
+              {activeIdx + 1} / {RYF_TEAM_MEMBERS.length}
+            </span>
+            {/* Aperçu en fond du membre suivant */}
+            <div className="absolute top-0 right-0 bottom-0 w-1/4 opacity-10 pointer-events-none overflow-hidden blur-[1px]">
               <img
-                src={nextPreview.imageUrl}
+                src={nextPreview?.imageUrl}
                 alt=""
-                className="w-full h-full object-cover object-center"
+                className="w-full h-full object-cover"
+                style={{
+                  objectPosition: nextPreview?.cropPosition || "center",
+                }}
               />
             </div>
 
-            {/* Current mini-page content with transparency transition */}
+            {/* Contenu principal de la mini-page */}
             <div
-              className={`grid grid-cols-1 sm:grid-cols-12 gap-6 items-center transition-opacity duration-700 ${
+              className={`grid grid-cols-1 sm:grid-cols-12 gap-4 sm:gap-5 items-start transition-opacity duration-700 ${
                 isFading ? "opacity-50" : "opacity-100"
               }`}
             >
-              {/* Photo */}
-              <div className="sm:col-span-4 flex justify-center sm:justify-start">
-                <div className="relative w-40 sm:w-full aspect-square sm:aspect-[4/5] rounded-xl overflow-hidden shadow-lg border border-border bg-white">
+              {/* Photo rognée avec conteneur compact */}
+              <div className="sm:col-span-4 flex justify-start sm:justify-end">
+                <div
+                  className="relative w-32 sm:w-36 md:w-40 h-40 sm:h-44 md:h-48 overflow-hidden shadow-sm border border-border bg-white shrink-0"
+                  style={{ borderRadius: "0px" }}
+                >
                   <img
                     src={currentMember.imageUrl}
                     alt={currentMember.name}
-                    className="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    style={{
+                      borderRadius: "0px",
+                      objectPosition: currentMember.cropPosition || "center 20%",
+                    }}
                   />
+                  {/* Badge type : Collaborateur ou Animateur */}
+                  <span
+                    className={`absolute bottom-0 left-0 right-0 py-0.5 text-center text-[9px] font-black uppercase tracking-wider text-white ${
+                      currentMember.type === "animateur" ? "bg-primary" : "bg-ryf-navy"
+                    }`}
+                  >
+                    {currentMember.type === "animateur" ? "Animateur Radio" : "Collaborateur"}
+                  </span>
                 </div>
               </div>
 
-              {/* Bio & Role */}
-              <div className="sm:col-span-8 space-y-2.5">
+              {/* Infos : Rôle, émission, horaires et bio */}
+              <div className="sm:col-span-8 space-y-1.5 text-left min-h-[210px] self-end">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-black uppercase text-primary tracking-wider">
-                    ÉQUIPE RYF RADIO
-                  </span>
-                  <span className="text-[11px] font-semibold text-muted-foreground">
-                    {activeIdx + 1} / {OTHER_MEMBERS.length} • Cliquez pour défiler →
+                  <span className="inline-flex items-center gap-1 text-[10px] font-extrabold uppercase text-primary tracking-wider">
+                    {currentMember.type === "animateur" ? (
+                      <>
+                        <Mic className="w-3 h-3 text-primary" />
+                        <span>Antenne & Émission</span>
+                      </>
+                    ) : (
+                      <>
+                        <UserCheck className="w-3 h-3 text-ryf-navy" />
+                        <span>Réseau & Correspondance</span>
+                      </>
+                    )}
                   </span>
                 </div>
-                <h5 className="text-xl sm:text-2xl font-black text-foreground">
+
+                <h5 className="text-lg sm:text-xl font-black text-foreground">
                   {currentMember.name}
                 </h5>
-                <p className="text-xs sm:text-sm font-bold text-primary">{currentMember.role}</p>
-                <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-                  {currentMember.bio}
-                </p>
 
-                {/* Dots indicator */}
-                <div className="pt-3 flex items-center gap-1.5">
-                  {OTHER_MEMBERS.map((m, idx) => (
+                <p className="text-xs sm:text-sm font-bold text-primary">{currentMember.role}</p>
+
+                {/* Si émission et grille horaire */}
+                {currentMember.schedule && (
+                  <div className="flex items-start gap-1.5 text-[11px] font-semibold text-ryf-navy bg-white/80 border border-border px-2 py-1">
+                    <Calendar className="w-3.5 h-3.5 shrink-0 mt-0.5 text-primary" />
+                    <span>{currentMember.schedule}</span>
+                  </div>
+                )}
+
+                {currentMember.bio && (
+                  <p className="text-xs text-muted-foreground leading-relaxed line-clamp-3">
+                    {currentMember.bio}
+                  </p>
+                )}
+
+                {/* Dots indicator compact */}
+                <div className="pt-2 flex items-center gap-1">
+                  {RYF_TEAM_MEMBERS.map((m, idx) => (
                     <span
                       key={m.id}
-                      className={`h-1.5 rounded-full transition-all duration-300 ${
-                        idx === activeIdx ? "w-6 bg-primary" : "w-1.5 bg-border"
+                      className={`h-1 transition-all duration-300 ${
+                        idx === activeIdx ? "w-5 bg-primary" : "w-1 bg-border"
                       }`}
+                      style={{ borderRadius: "0px" }}
                     />
                   ))}
                 </div>

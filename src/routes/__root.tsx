@@ -12,6 +12,7 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportVibeError } from "../lib/vibe-error-reporting";
 import { RYF_ASSETS } from "../lib/ryf-data";
+import { LivePlayerBar } from "@/components/LivePlayerBar";
 
 function NotFoundComponent() {
   return (
@@ -78,11 +79,18 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "AI Studio App" },
-      { name: "description", content: "AI Studio Generated Project" },
-      { name: "author", content: "AI Studio" },
-      { property: "og:title", content: "AI Studio App" },
-      { property: "og:description", content: "AI Studio Generated Project" },
+      { title: "RYF Radio • Le Top du Divertissement !" },
+      {
+        name: "description",
+        content:
+          "Détendez-vous et profitez de la musique, vous êtes sur RYF RADIO. Web radio d'actualité culturelle, musique et divertissement.",
+      },
+      { name: "author", content: "RYF Radio" },
+      { property: "og:title", content: "RYF Radio • Le Top du Divertissement !" },
+      {
+        property: "og:description",
+        content: "Détendez-vous et profitez de la musique, vous êtes sur RYF RADIO.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -146,6 +154,9 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <Outlet />
+      {/* Persistent live player — mounted once at the root so the stream keeps
+          playing across route navigations. State is shared via player-store. */}
+      <LivePlayerBar />
     </QueryClientProvider>
   );
 }

@@ -1,41 +1,68 @@
 import React, { useRef, useState, useEffect, useCallback } from "react";
 import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 import { RYF_NEWS } from "@/lib/ryf-data";
+import { Link } from "@tanstack/react-router";
 
 const AUTO_STEP = 4200; // soft auto-advance delay (ms)
 
 export const UniversSection: React.FC = () => {
   const scrollerRef = useRef<HTMLDivElement>(null);
   const [isPaused, setIsPaused] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(0); // card at center/focus
+  const [clickedCardId, setClickedCardId] = useState<string | null>(null);
 
-  const featured = RYF_NEWS[0];
-  const latest = RYF_NEWS.slice(1);
-
-  const stepWidth = () => {
+  // Détection de l'élément le plus proche du centre au défilement
+  const handleScroll = () => {
     const el = scrollerRef.current;
-    if (!el) return 320;
-    const first = el.querySelector<HTMLElement>("[data-card]");
-    return first ? first.offsetWidth + 20 : el.clientWidth * 0.8;
+    if (!el) return;
+    const cards = el.querySelectorAll<HTMLElement>("[data-card]");
+    if (!cards.length) return;
+
+    const containerCenter = el.getBoundingClientRect().left + el.clientWidth / 2;
+    let closestIdx = 0;
+    let minDistance = Infinity;
+
+    cards.forEach((card, idx) => {
+      const rect = card.getBoundingClientRect();
+      const cardCenter = rect.left + rect.width / 2;
+      const distance = Math.abs(containerCenter - cardCenter);
+      if (distance < minDistance) {
+        minDistance = distance;
+        closestIdx = idx;
+      }
+    });
+
+    setActiveIndex(closestIdx);
   };
 
-  const scrollByDir = useCallback((dir: "left" | "right") => {
+  const scrollToCard = useCallback((index: number) => {
     const el = scrollerRef.current;
     if (!el) return;
-    const amount = stepWidth();
-    el.scrollBy({ left: dir === "left" ? -amount : amount, behavior: "smooth" });
-  }, []);
-
-  const autoNext = useCallback(() => {
-    const el = scrollerRef.current;
-    if (!el) return;
-    const amount = stepWidth();
-    // loop back to start when reaching the end
-    if (el.scrollLeft + el.clientWidth >= el.scrollWidth - 8) {
-      el.scrollTo({ left: 0, behavior: "smooth" });
-    } else {
-      el.scrollBy({ left: amount, behavior: "smooth" });
+    const cards = el.querySelectorAll<HTMLElement>("[data-card]");
+    const target = cards[index];
+    if (target) {
+      const left = target.offsetLeft - (el.clientWidth / 2 - target.offsetWidth / 2);
+      el.scrollTo({ left, behavior: "smooth" });
     }
   }, []);
+
+  const scrollByDir = useCallback(
+    (dir: "left" | "right") => {
+      const next =
+        dir === "left"
+          ? (activeIndex - 1 + RYF_NEWS.length) % RYF_NEWS.length
+          : (activeIndex + 1) % RYF_NEWS.length;
+      setActiveIndex(next);
+      scrollToCard(next);
+    },
+    [activeIndex, scrollToCard],
+  );
+
+  const autoNext = useCallback(() => {
+    const next = (activeIndex + 1) % RYF_NEWS.length;
+    setActiveIndex(next);
+    scrollToCard(next);
+  }, [activeIndex, scrollToCard]);
 
   useEffect(() => {
     if (isPaused) return;
@@ -46,17 +73,17 @@ export const UniversSection: React.FC = () => {
   return (
     <section
       id="actualites"
-      className="py-16 bg-gradient-to-b from-white via-slate-50/60 to-white border-b border-border/60 pt-[54px] pb-[54px]"
+      className="relative py-16 bg-white border-b border-border/60 pt-[54px] pb-[54px] overflow-hidden"
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 text-center">
         {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto mb-12">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-foreground tracking-tight">
+        <div className="text-center max-w-3xl mx-auto mb-4">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-foreground tracking-tight uppercase">
             ACTUALITÉS
           </h2>
         </div>
 
-        {/* Horizontal auto-scrolling row — À LA UNE + DERNIÈRES PUBLICATIONS sur la même ligne */}
+        {/* Horizontal auto-scrolling row avec effet center focus */}
         <div
           className="relative"
           onMouseEnter={() => setIsPaused(true)}
@@ -67,7 +94,8 @@ export const UniversSection: React.FC = () => {
             type="button"
             onClick={() => scrollByDir("left")}
             aria-label="Actualités précédentes"
-            className="hidden md:flex absolute -left-4 top-1/2 -translate-y-1/2 z-20 w-11 h-11 items-center justify-center rounded-full bg-card border border-border shadow-lg text-primary hover:bg-primary hover:text-primary-foreground hover:scale-105 transition-all"
+            className="hidden md:flex absolute -left-3 lg:-left-5 top-1/2 -translate-y-1/2 z-30 w-11 h-11 items-center justify-center bg-white border border-border shadow-lg text-primary hover:bg-primary hover:text-white transition-all"
+            style={{ borderRadius: "50px" }}
           >
             <ChevronLeft className="w-6 h-6" />
           </button>
@@ -75,66 +103,88 @@ export const UniversSection: React.FC = () => {
           {/* Scroller */}
           <div
             ref={scrollerRef}
-            className="flex gap-5 overflow-x-auto scroll-smooth snap-x snap-mandatory pb-4 md:pb-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+            onScroll={handleScroll}
+            className="flex items-center justify-start sm:justify-center gap-6 overflow-x-auto scroll-smooth snap-x snap-mandatory py-6 px-[10vw] sm:px-4 md:px-12 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] text-left"
           >
-            {/* À LA UNE — même format que les dernières publications */}
-            <article
-              data-card
-              className="group relative bg-card rounded-2xl border border-border shadow-md hover:shadow-2xl hover:shadow-primary/20 hover:border-primary/40 transition-all duration-500 overflow-hidden snap-start shrink-0 w-[88vw] sm:w-[290px] flex flex-col hover:-translate-y-1"
-            >
-              <span className="absolute top-3 left-3 z-10 px-2.5 py-1 rounded-full bg-primary text-primary-foreground text-[10px] font-extrabold uppercase tracking-widest shadow-sm">
-                À LA UNE
-              </span>
-              <div className="relative aspect-video overflow-hidden">
-                <img
-                  src={featured.imageUrl}
-                  alt={featured.title}
-                  loading="lazy"
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
-              </div>
-              <div className="p-5 flex flex-col flex-1">
-                <p className="text-sm text-muted-foreground leading-relaxed flex-1 line-clamp-2">
-                  {featured.summary}
-                </p>
-                <button className="mt-4 inline-flex items-center gap-2 text-xs font-extrabold uppercase tracking-wider text-primary hover:gap-3 transition-all self-start">
-                  <span>LIRE L’ARTICLE</span>
-                  <ArrowRight className="w-4 h-4" />
-                </button>
-              </div>
-            </article>
+            {RYF_NEWS.map((article, idx) => {
+              const isCenter = idx === activeIndex;
+              const isRevealed = clickedCardId === article.id;
 
-            {/* NOS DERNIÈRES PUBLICATIONS */}
-            {latest.map((article) => (
-              <article
-                key={article.id}
-                data-card
-                className="group relative bg-card rounded-2xl border border-border shadow-md hover:shadow-2xl hover:shadow-primary/20 hover:border-primary/40 transition-all duration-500 overflow-hidden snap-start shrink-0 w-[88vw] sm:w-[290px] flex flex-col hover:-translate-y-1"
-              >
-                <span className="absolute top-3 left-3 z-10 px-2.5 py-1 rounded-full bg-secondary text-primary text-[10px] font-extrabold uppercase tracking-widest shadow-sm">
-                  DERNIÈRE PUBLICATION
-                </span>
-                <div className="relative aspect-video overflow-hidden">
-                  <img
-                    src={article.imageUrl}
-                    alt={article.title}
-                    loading="lazy"
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
-                </div>
-                <div className="p-5 flex flex-col flex-1">
-                  <p className="text-sm text-muted-foreground leading-relaxed flex-1 line-clamp-2">
-                    {article.summary}
-                  </p>
-                  <button className="mt-4 inline-flex items-center gap-2 text-xs font-extrabold uppercase tracking-wider text-primary hover:gap-3 transition-all self-start">
-                    <span>LIRE L’ARTICLE</span>
-                    <ArrowRight className="w-4 h-4" />
-                  </button>
-                </div>
-              </article>
-            ))}
+              return (
+                <article
+                  key={article.id}
+                  data-card
+                  onClick={() => {
+                    // Clic sur la carte : révèle la mention À LA UNE et centre l'élément
+                    setClickedCardId((prev) => (prev === article.id ? null : article.id));
+                    setActiveIndex(idx);
+                    scrollToCard(idx);
+                  }}
+                  className={`group relative bg-white border cursor-pointer snap-center shrink-0 w-[80vw] sm:w-[300px] md:w-[330px] flex flex-col transition-all duration-500 ${
+                    isCenter
+                      ? "scale-100 sm:scale-105 z-20 shadow-2xl border-primary ring-2 ring-primary/40 -translate-y-1"
+                      : "scale-90 sm:scale-95 z-10 shadow-md border-border/80 opacity-90 hover:opacity-100"
+                  }`}
+                  style={{ borderRadius: "0px" }}
+                >
+                  {/* Mention À LA UNE : juste le texte visible (pas dans un span/badge pill) */}
+                  <div className="px-4 pt-3 pb-1 flex items-center justify-between text-xs font-black uppercase tracking-wider">
+                    {/* Apparaît lorsqu'on clique sur l'image / carte ou si au centre */}
+                    <span
+                      className={`text-red-600 transition-opacity duration-300 ${
+                        isRevealed || isCenter ? "opacity-100 font-extrabold" : "opacity-0"
+                      }`}
+                    >
+                      À LA UNE
+                    </span>
+                    <span className="text-[11px] font-semibold text-muted-foreground">
+                      {article.category}
+                    </span>
+                  </div>
+
+                  {/* Image carrée (bordures droites), nette, avec zoom au survol */}
+                  <div
+                    className="relative aspect-video overflow-hidden bg-slate-900 border-y border-border/40"
+                    style={{ borderRadius: "0px" }}
+                  >
+                    <img
+                      src={article.imageUrl}
+                      alt={article.title}
+                      loading="lazy"
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                      style={{ borderRadius: "0px" }}
+                    />
+                    {/* Petit rappel indicatif au clic */}
+                    {!isRevealed && !isCenter && (
+                      <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors" />
+                    )}
+                  </div>
+
+                  {/* Contenu bref : titre et description courte */}
+                  <div className="p-4 sm:p-5 flex flex-col flex-1">
+                    <h3 className="text-sm font-black text-foreground group-hover:text-primary transition-colors leading-snug line-clamp-2 uppercase mb-2">
+                      {article.title}
+                    </h3>
+                    <p className="text-xs text-muted-foreground leading-relaxed flex-1 line-clamp-2">
+                      {article.summary}
+                    </p>
+
+                    {/* Redirection vers la page dédiée d'actualités */}
+                    <Link
+                      to="/actualites"
+                      search={{ id: article.id }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                      }}
+                      className="mt-4 inline-flex items-center gap-2 text-xs font-black uppercase tracking-wider text-primary hover:text-primary/80 hover:gap-3 transition-all self-start border-b border-primary/40 pb-0.5"
+                    >
+                      <span>LIRE L’ARTICLE</span>
+                      <ArrowRight className="w-4 h-4" />
+                    </Link>
+                  </div>
+                </article>
+              );
+            })}
           </div>
 
           {/* Next button */}
@@ -142,7 +192,8 @@ export const UniversSection: React.FC = () => {
             type="button"
             onClick={() => scrollByDir("right")}
             aria-label="Actualités suivantes"
-            className="hidden md:flex absolute -right-4 top-1/2 -translate-y-1/2 z-20 w-11 h-11 items-center justify-center rounded-full bg-card border border-border shadow-lg text-primary hover:bg-primary hover:text-primary-foreground hover:scale-105 transition-all"
+            className="hidden md:flex absolute -right-3 lg:-right-5 top-1/2 -translate-y-1/2 z-30 w-11 h-11 items-center justify-center bg-white border border-border shadow-lg text-primary hover:bg-primary hover:text-white transition-all"
+            style={{ borderRadius: "50px" }}
           >
             <ChevronRight className="w-6 h-6" />
           </button>

@@ -1,16 +1,15 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
 import { Header } from "@/components/Header";
 import { HeroSection } from "@/components/HeroSection";
 import { UniversSection } from "@/components/UniversSection";
 import { AboutSection } from "@/components/AboutSection";
 import { PartenairesSection } from "@/components/PartenairesSection";
 import { NewsAndAgendaSection } from "@/components/NewsAndAgendaSection";
+import { PubSection } from "@/components/PubSection";
 import { ProgrammesAndMediaSection } from "@/components/ProgrammesAndMediaSection";
 import { EquipeSection } from "@/components/EquipeSection";
 import { RealisationsAndCommunitySection } from "@/components/RealisationsAndCommunitySection";
 import { FooterAndModals } from "@/components/FooterAndModals";
-import { LivePlayerBar } from "@/components/LivePlayerBar";
 import { Toaster } from "@/components/ui/sonner";
 import { RYF_ASSETS } from "@/lib/ryf-data";
 
@@ -23,20 +22,33 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "RYF Radio (Rythmes & Folies) : La radio digitale du divertissement, de la musique camerounaise et africaine, de la culture et des événements en direct.",
+          "Détendez-vous et profitez de la musique, vous êtes sur RYF RADIO. Écoutez en direct 24h/24 le meilleur de la musique et de la culture africaine.",
       },
       {
         property: "og:title",
-        content: "RYF Radio, Le Top du Divertissement | Musique & Culture",
+        content: "RYF Radio • Le Top du Divertissement !",
       },
       {
         property: "og:description",
         content:
-          "« Plus qu'une radio, une communauté ! » Écoutez en direct 24h/24 le meilleur de la musique et de la culture camerounaise et africaine.",
+          "Détendez-vous et profitez de la musique, vous êtes sur RYF RADIO. Musique, culture, interviews et direct 24h/24.",
       },
       {
         property: "og:image",
-        content: RYF_ASSETS.heroCrowd,
+        content:
+          "https://vibe.filesafe.space/1791205471365853905/attachments/b31a22ea-92d2-4d2c-9c4a-cc23245d33b9.jpg",
+      },
+      {
+        property: "og:image:width",
+        content: "1200",
+      },
+      {
+        property: "og:image:height",
+        content: "675",
+      },
+      {
+        property: "og:image:alt",
+        content: "RYF Radio • Le Top du Divertissement !",
       },
       {
         property: "og:type",
@@ -47,8 +59,17 @@ export const Route = createFileRoute("/")({
         content: "summary_large_image",
       },
       {
+        name: "twitter:title",
+        content: "RYF Radio • Le Top du Divertissement !",
+      },
+      {
+        name: "twitter:description",
+        content: "Détendez-vous et profitez de la musique, vous êtes sur RYF RADIO.",
+      },
+      {
         name: "twitter:image",
-        content: RYF_ASSETS.heroCrowd,
+        content:
+          "https://vibe.filesafe.space/1791205471365853905/attachments/b31a22ea-92d2-4d2c-9c4a-cc23245d33b9.jpg",
       },
     ],
     links: [
@@ -75,27 +96,18 @@ export const Route = createFileRoute("/")({
 });
 
 function Index() {
-  const [playerModalOpen, setPlayerModalOpen] = useState(false);
-  const [scheduleModalOpen, setScheduleModalOpen] = useState(false);
-
   return (
     <div className="min-h-screen max-w-full overflow-x-clip bg-background text-foreground flex flex-col selection:bg-accent/30 selection:text-foreground">
       {/* Toast notifications */}
       <Toaster position="top-right" richColors />
 
       {/* Main Header / Navigation */}
-      <Header
-        onOpenPlayer={() => setPlayerModalOpen(true)}
-        onOpenSchedule={() => setScheduleModalOpen(true)}
-      />
+      <Header />
 
       {/* Page Content ordered strictly according to instructions */}
       <main className="flex-1 pb-20 sm:pb-28 bg-white">
         {/* 1. Hero */}
-        <HeroSection
-          onOpenPlayer={() => setPlayerModalOpen(true)}
-          onOpenSchedule={() => setScheduleModalOpen(true)}
-        />
+        <HeroSection />
 
         {/* 2. Actualités (Horizontal auto-scrolling line) */}
         <UniversSection />
@@ -106,11 +118,11 @@ function Index() {
         {/* 4. Agenda Culturel (Image 3 underneath title + rotating agenda banners) */}
         <NewsAndAgendaSection />
 
+        {/* 4.1. Espace Publicitaire Partenaire : Chouquette by Osiera */}
+        <PubSection />
+
         {/* 5. Nos Programmes (Image 4 + Grille des chroniques 06H00-18H00) + Vidéos YouTube en continu + Podcasts */}
-        <ProgrammesAndMediaSection
-          onOpenPlayer={() => setPlayerModalOpen(true)}
-          onOpenSchedule={() => setScheduleModalOpen(true)}
-        />
+        <ProgrammesAndMediaSection />
 
         {/* 6. Notre Équipe */}
         <EquipeSection />
@@ -123,18 +135,10 @@ function Index() {
       </main>
 
       {/* 9. Footer officiel (Contacts en premier avec icônes: WhatsApp, Yaoundé, email + rubriques de la barre de navigation) */}
-      <FooterAndModals
-        scheduleOpen={scheduleModalOpen}
-        setScheduleOpen={setScheduleModalOpen}
-        onOpenPlayer={() => setPlayerModalOpen(true)}
-      />
+      <FooterAndModals />
 
-      {/* Sticky Bottom Broadcast Player Deck */}
-      <LivePlayerBar
-        onOpenSchedule={() => setScheduleModalOpen(true)}
-        isOpenModal={playerModalOpen}
-        setIsOpenModal={setPlayerModalOpen}
-      />
+      {/* Live player is mounted once at the root route (see __root.tsx) so it
+          keeps playing across navigations. */}
     </div>
   );
 }

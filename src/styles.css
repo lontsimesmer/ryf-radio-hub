@@ -138,3 +138,374 @@
 .animate-wave-5 {
   animation: soundwave 1.2s ease-in-out infinite 0.3s;
 }
+
+/* Pub image: three-step zoom-in on scroll */
+@keyframes pubZoomIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  35% {
+    opacity: 0.5;
+    transform: scale(0.8);
+  }
+  70% {
+    opacity: 0.9;
+    transform: scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.pub-zoom-in {
+  animation: pubZoomIn 1.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* ===== LECTEUR RYF RADIO – BARRE HORIZONTALE COMPACTE ===== */
+.rk-bar {
+  --rk-main: #2480cc;
+  --rk-text: #ffffff;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  height: 64px;
+  padding: 0 14px 0 6px;
+  background: var(--rk-main);
+  color: var(--rk-text);
+  border-radius: 0;
+  overflow: hidden;
+  font-family:
+    "Montserrat",
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    Roboto,
+    sans-serif;
+  -webkit-tap-highlight-color: transparent;
+}
+.rk-bar * {
+  box-sizing: border-box;
+}
+.rk-bar button {
+  font: inherit;
+  -webkit-appearance: none;
+  appearance: none;
+}
+.rk-cover {
+  width: 52px;
+  height: 52px;
+  border-radius: 6px;
+  object-fit: cover;
+  background: #fff;
+  flex: none;
+}
+
+/* --- Boutons coeur / play / coeur brisé --- */
+.rk-ctrls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: none;
+}
+.rk-circle {
+  display: grid;
+  place-items: center;
+  flex: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  border-radius: 50%;
+  background: #fff;
+  color: var(--rk-main);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+.rk-vote {
+  width: 30px;
+  height: 30px;
+  transition: opacity 0.2s;
+}
+.rk-vote svg {
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
+}
+.rk-vote[aria-pressed="true"] {
+  background: var(--rk-main);
+  color: #fff;
+  box-shadow: 0 0 0 2px #fff;
+}
+.rk-vote:disabled {
+  cursor: default;
+}
+.rk-bar.voted .rk-vote[aria-pressed="false"] {
+  opacity: 0.45;
+}
+.rk-play {
+  width: 44px;
+  height: 44px;
+}
+.rk-play svg {
+  width: 24px;
+  height: 24px;
+  fill: currentColor;
+}
+
+/* --- États du bouton play --- */
+.i-pause,
+.i-load,
+.i-off {
+  display: none;
+}
+.rk-bar.playing .i-play {
+  display: none;
+}
+.rk-bar.playing .i-pause {
+  display: block;
+}
+.rk-bar.loading .i-play,
+.rk-bar.loading .i-pause {
+  display: none;
+}
+.rk-bar.loading .i-load {
+  display: block;
+  fill: none;
+  animation: rkSpin 0.8s linear infinite;
+}
+@keyframes rkSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.rk-bar.muted .i-vol {
+  display: none;
+}
+.rk-bar.muted .i-off {
+  display: block;
+}
+
+/* --- Textes : station, titre, artiste --- */
+.rk-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  line-height: 1.25;
+}
+.rk-station {
+  font-size: 11px;
+  font-weight: 500;
+  opacity: 0.9;
+}
+.rk-title-wrap {
+  overflow: hidden;
+  white-space: nowrap;
+}
+.rk-title {
+  display: block;
+  font-size: 14px;
+  font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.rk-artist {
+  font-size: 12px;
+  opacity: 0.85;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.rk-title-wrap.scroll .rk-title {
+  display: inline-flex;
+  overflow: visible;
+  text-overflow: clip;
+  animation: rkMarq var(--dur, 12s) linear infinite;
+}
+/* Le défilement ne s'anime que lorsque le flux est en lecture :
+   preuve visuelle en temps réel que le direct joue. */
+.rk-bar:not(.playing) .rk-title-wrap.scroll .rk-title {
+  animation-play-state: paused;
+}
+.rk-title-wrap.scroll .rk-marq {
+  padding-right: 40px;
+}
+@keyframes rkMarq {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* --- Outils de droite --- */
+.rk-tools {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: none;
+}
+.rk-icon {
+  display: grid;
+  place-items: center;
+  border: 0;
+  padding: 0;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+  width: 24px;
+  height: 24px;
+}
+.rk-icon svg {
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
+}
+.rk-vol-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.rk-vol {
+  --fill: 80%;
+  -webkit-appearance: none;
+  appearance: none;
+  width: 70px;
+  height: 14px;
+  margin: 0;
+  background: transparent;
+  cursor: pointer;
+}
+.rk-vol::-webkit-slider-runnable-track {
+  height: 3px;
+  border-radius: 2px;
+  background: linear-gradient(to right, #fff var(--fill, 80%), #164f80 var(--fill, 80%));
+}
+.rk-vol::-moz-range-track {
+  height: 3px;
+  border-radius: 2px;
+  background: #164f80;
+}
+.rk-vol::-moz-range-progress {
+  height: 3px;
+  border-radius: 2px;
+  background: #fff;
+}
+.rk-vol::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 10px;
+  height: 10px;
+  margin-top: -3.5px;
+  border-radius: 50%;
+  background: #fff;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+.rk-vol::-moz-range-thumb {
+  width: 10px;
+  height: 10px;
+  border: 0;
+  border-radius: 50%;
+  background: #fff;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+.rk-vol:hover::-webkit-slider-thumb,
+.rk-vol:focus-visible::-webkit-slider-thumb {
+  opacity: 1;
+}
+.rk-vol:hover::-moz-range-thumb,
+.rk-vol:focus-visible::-moz-range-thumb {
+  opacity: 1;
+}
+.rk-bar button:focus-visible,
+.rk-vol:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+/* ===== MOBILE (Android / iOS) ===== */
+@media (max-width: 640px) {
+  .rk-bar {
+    height: 50px;
+    gap: 8px;
+    padding: 0 8px 0 4px;
+  }
+  .rk-cover {
+    width: 42px;
+    height: 42px;
+    border-radius: 4px;
+  }
+  .rk-ctrls {
+    gap: 2px;
+  }
+  .rk-play {
+    width: 32px;
+    height: 32px;
+  }
+  .rk-play svg {
+    width: 18px;
+    height: 18px;
+  }
+  /* petits coeurs sans cercle, visibles en début de titre, cachés après le vote */
+  .rk-vote {
+    width: 24px;
+    height: 24px;
+    background: none;
+    box-shadow: none;
+    color: #fff;
+  }
+  .rk-vote svg {
+    width: 15px;
+    height: 15px;
+  }
+  .rk-bar.voted .rk-vote {
+    display: none;
+  }
+  .rk-bar.voted .rk-ctrls {
+    gap: 0;
+  }
+  .rk-station {
+    display: none;
+  }
+  .rk-title {
+    font-size: 13px;
+  }
+  .rk-artist {
+    font-size: 11px;
+  }
+  /* volume masqué (son au maximum) ; agrandir en haut, partager en bas */
+  .rk-vol-group {
+    display: none;
+  }
+  .rk-tools {
+    flex-direction: column;
+    gap: 4px;
+  }
+  .rk-popup {
+    order: -1;
+  }
+  .rk-icon {
+    width: 22px;
+    height: 20px;
+  }
+  .rk-icon svg {
+    width: 16px;
+    height: 16px;
+  }
+}
+@media (max-width: 340px) {
+  .rk-cover {
+    display: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .rk-title-wrap.scroll .rk-title {
+    animation-duration: 30s;
+  }
+}
+/* ===== FIN LECTEUR ===== */
